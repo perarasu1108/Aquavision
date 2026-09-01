@@ -1,0 +1,3 @@
+Water resource departments require digital monitoring of groundwater levels, recharge structures, borewells, and extraction patterns.
+i need to do this project only using the MERN Stack ,add AI feartures to this web and search more gitee and gitup reppos to 
+build the website with better UI/UX and good user expreance.
