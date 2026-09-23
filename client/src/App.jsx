@@ -13,12 +13,23 @@ import Reports from './pages/Reports';
 import Login from './pages/Login';
 import { useAuth } from './context/AuthContext';
 
+/* Protected Route wrapper — redirects to login if not authenticated */
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
 function App() {
   const [collapsed, setCollapsed] = useState(false);
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   const isLoginPage = location.pathname === '/login';
+
+  // If on login page and already authenticated, redirect to dashboard
+  if (isLoginPage && isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="app-layout">
@@ -29,17 +40,17 @@ function App() {
         </>
       )}
 
-      <main className={!isLoginPage ? `main-content ${collapsed ? 'collapsed' : ''}` : 'w-full'}>
+      <main className={!isLoginPage ? `main-content ${collapsed ? 'collapsed' : ''}` : ''}>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/groundwater" element={<GroundwaterMonitor />} />
-          <Route path="/borewells" element={<BorewellManager />} />
-          <Route path="/recharge" element={<RechargeStructures />} />
-          <Route path="/extraction" element={<ExtractionPatterns />} />
-          <Route path="/ai-insights" element={<AIInsights />} />
-          <Route path="/alerts" element={<Alerts />} />
-          <Route path="/reports" element={<Reports />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/groundwater" element={<ProtectedRoute><GroundwaterMonitor /></ProtectedRoute>} />
+          <Route path="/borewells" element={<ProtectedRoute><BorewellManager /></ProtectedRoute>} />
+          <Route path="/recharge" element={<ProtectedRoute><RechargeStructures /></ProtectedRoute>} />
+          <Route path="/extraction" element={<ProtectedRoute><ExtractionPatterns /></ProtectedRoute>} />
+          <Route path="/ai-insights" element={<ProtectedRoute><AIInsights /></ProtectedRoute>} />
+          <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
+          <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

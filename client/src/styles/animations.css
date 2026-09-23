@@ -208,3 +208,21 @@
 .page-enter {
   animation: fadeSlideUp 0.3s ease-out;
 }
+
+/* ============================
+   SPINNER & UTILITIES
+   ============================ */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease-in-out infinite alternate;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
