@@ -71,25 +71,39 @@ const Navbar = ({ collapsed }) => {
             <span className="badge">3</span>
           </button>
 
-          {/* User Badge */}
+          {/* User Badge - Shows the exact logged-in account */}
           {user ? (
-            <div className="user-menu" onClick={logout} title="Click to Logout">
-              <div className="user-avatar" style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: 'var(--radius-md)',
-                background: 'var(--gradient-primary)',
-                color: '#040814',
-                fontWeight: 800,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                {user.avatar || user.name?.substring(0, 2).toUpperCase() || 'AD'}
+            <div
+              className="user-menu"
+              onClick={logout}
+              title={`Logged in as ${user.name} (${user.email || 'Government Account'})\nClick to Logout`}
+              style={{ cursor: 'pointer' }}
+            >
+              <div
+                className="user-avatar"
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: 'var(--radius-md)',
+                  background: 'var(--gradient-primary)',
+                  color: '#040814',
+                  fontWeight: 800,
+                  fontSize: '0.82rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {user.avatar || (user.name ? user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : 'US')}
               </div>
               <div className="user-info" style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="user-name" style={{ fontSize: '0.82rem', fontWeight: 700 }}>{user.name}</span>
-                <span className="user-role" style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{user.role}</span>
+                <span className="user-name" style={{ fontSize: '0.82rem', fontWeight: 700, maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.name}
+                </span>
+                <span className="user-role" style={{ fontSize: '0.68rem', color: 'var(--text-muted)', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user.email || user.role}
+                </span>
               </div>
               <LogOut size={16} color="var(--text-muted)" style={{ marginLeft: '6px' }} />
             </div>

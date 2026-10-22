@@ -53,14 +53,38 @@ export const apiService = {
       const res = await client.post('/auth/login', { email, password });
       return res.data;
     } catch {
-      // Mock login fallback
+      // Offline / fallback dynamic user based on entered credentials
+      const cleanEmail = email?.trim() || 'user@aquavision.gov.in';
+      const usernamePart = cleanEmail.split('@')[0];
+      // Format username into readable display name (e.g. "priya.sharma" -> "Priya Sharma")
+      const formattedName = usernamePart
+        .replace(/[._\-]/g, ' ')
+        .split(' ')
+        .filter(Boolean)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ') || 'User';
+
+      const initials = formattedName
+        .split(' ')
+        .map(w => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase() || 'US';
+
+      const isOfficer = cleanEmail.toLowerCase().includes('officer');
+      const isAdmin = cleanEmail.toLowerCase().includes('admin');
+
       return {
         success: true,
-        token: 'mock-jwt-token-aquavision-2024',
+        token: `token-${Date.now()}`,
         user: {
-          ...demoUser,
-          email: email || demoUser.email,
-          role: email?.includes('officer') ? 'Field Officer' : 'Admin'
+          _id: `user-${Date.now()}`,
+          name: formattedName,
+          email: cleanEmail,
+          role: isAdmin ? 'Chief Hydrogeologist / Admin' : isOfficer ? 'Field Officer' : 'Water Resource Specialist',
+          department: 'State Water Resources Department',
+          district: 'Tamil Nadu Central Division',
+          avatar: initials
         }
       };
     }

@@ -6,10 +6,14 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('aquavision_user');
-    return saved ? JSON.parse(saved) : demoUser;
+    try {
+      const saved = localStorage.getItem('aquavision_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('aquavision_token') || 'demo-token');
+  const [token, setToken] = useState(() => localStorage.getItem('aquavision_token') || null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -58,8 +62,38 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('aquavision_token', 'demo-token-123');
   };
 
+  const loginWithGoogle = async (googleUser = null) => {
+    setLoading(true);
+    try {
+      const email = googleUser?.email || 'officer.tnwater@gmail.com';
+      const name = googleUser?.name || (email.split('@')[0].replace(/[._\-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+      const initials = name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+
+      const userProfile = {
+        _id: `g-user-${Date.now()}`,
+        name: name,
+        email: email,
+        role: 'Field Officer (Google)',
+        department: 'Water Resources Department (TNDWR)',
+        district: 'Coimbatore Division',
+        avatar: initials,
+        ...googleUser
+      };
+      const googleToken = `google-jwt-${Date.now()}`;
+      setUser(userProfile);
+      setToken(googleToken);
+      localStorage.setItem('aquavision_token', googleToken);
+      localStorage.setItem('aquavision_user', JSON.stringify(userProfile));
+      return { success: true };
+    } catch (err) {
+      return { success: false, message: err.message || 'Google sign-in failed' };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, loginDemo, isAuthenticated: !!token }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout, loginDemo, loginWithGoogle, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
